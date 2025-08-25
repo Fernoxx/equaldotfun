@@ -36,6 +36,7 @@ contract EqualFunFactory is Ownable, ReentrancyGuard {
         uint256 k; // Constant product for bonding curve
         bool liquidityLocked;
         uint256 createdAt;
+        address aerodromePool; // Pool address after liquidity is added
     }
     
     // Constants
@@ -186,6 +187,9 @@ contract EqualFunFactory is Ownable, ReentrancyGuard {
             
             // Create pair
             address pair = aerodrome.createPair(tokenAddress, weth, false);
+            
+            // Store pool address
+            tokenData.aerodromePool = pair;
             
             // Approve tokens
             IERC20(tokenAddress).approve(address(aerodrome), liquidityTokens);
