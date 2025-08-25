@@ -7,6 +7,7 @@ import { FACTORY_ABI } from '@/lib/abis';
 import { CONTRACTS } from '@/lib/config';
 import { useRouter } from 'next/navigation';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { parseEther } from 'viem';
 
 export default function CreateToken() {
   const router = useRouter();
@@ -14,7 +15,8 @@ export default function CreateToken() {
   const [formData, setFormData] = useState({
     name: '',
     symbol: '',
-    description: ''
+    description: '',
+    ethAmount: ''
   });
 
   const { data: hash, writeContract, isPending } = useWriteContract();
@@ -26,15 +28,17 @@ export default function CreateToken() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!address || !chainId) return;
+    if (!address || !chainId || !formData.ethAmount) return;
     
     const factoryAddress = CONTRACTS.factory[chainId as keyof typeof CONTRACTS.factory];
+    const ethValue = parseEther(formData.ethAmount);
     
     writeContract({
       address: factoryAddress as `0x${string}`,
       abi: FACTORY_ABI,
       functionName: 'createToken',
       args: [formData.name, formData.symbol, formData.description],
+      value: ethValue,
     });
   };
 
@@ -102,10 +106,32 @@ export default function CreateToken() {
                 <h3 className="text-xl font-semibold text-white">Token Details</h3>
                 <div className="space-y-2 text-white/70">
                   <p>• Total Supply: 1,000,000,000 tokens</p>
-                  <p>• Initial Liquidity: 80% on bonding curve</p>
-                  <p>• Reserved for LP: 20% (locked at $55k market cap)</p>
-                  <p>• Trading Fee: 1% (40% holders, 40% creator, 20% platform)</p>
-                  <p>• Holder Requirement: 24 hours minimum holding period</p>
+                  <p>• Initial Liquidity: 90% + your ETH → Uniswap V3</p>
+                  <p>• Creator Allocation: 10% of supply</p>
+                  <p>• Liquidity: Permanently locked (LP NFT → 0xdead)</p>
+                  <p>• Trading Fee: 1% on all swaps</p>
+                  <p>• Fee Distribution: 40% holders (24h+), 40% creator, 20% platform</p>
+                  <p>• DEX: Uniswap V3 with concentrated liquidity</p>
+                </div>
+              </div>
+              
+              <div className="glass-effect rounded-xl p-6 space-y-4">
+                <h3 className="text-xl font-semibold text-white">Initial Liquidity Required</h3>
+                <div className="space-y-2">
+                  <p className="text-white/70">Minimum: 0.1 ETH</p>
+                  <p className="text-white/70">Recommended: 0.5-1 ETH for better liquidity</p>
+                  <div className="mt-4">
+                    <label className="block text-white font-medium mb-2">ETH Amount for Liquidity</label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      min="0.1"
+                      placeholder="0.5"
+                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-purple-500 transition-colors"
+                      value={formData.ethAmount || ''}
+                      onChange={(e) => setFormData({ ...formData, ethAmount: e.target.value })}
+                    />
+                  </div>
                 </div>
               </div>
               
