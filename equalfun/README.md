@@ -1,4 +1,4 @@
-# Equal.fun - Fair Token Launches on Base
+# Equal.fun - Fair Token Launches on Base / farcaster
 
 Equal.fun is a decentralized token launch platform on Base chain that ensures fair distribution of rewards to holders, creators, and the platform. Built as a pump.fun clone with unique features for equitable reward distribution.
 
